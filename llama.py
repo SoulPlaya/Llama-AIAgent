@@ -8,19 +8,26 @@ import pyttsx3
 import threading
 import time
 
+
+def text_to_speech(text):
+    """Convert text to speech using pyttsx3"""
+    print(f"llama: {text}")
+    engine = pyttsx3.init()
+    engine.setProperty('rate', 180)  # Speed
+    engine.say(text)
+    engine.runAndWait()
+
+
+
 class llama:
     def __init__(self):
         # Model configuration
         self.fast_model = 'llama3.1:8b-instruct-q4_K_M'
-        self.smart_model = 'llama3.1:70b-instruct-q4_K_M'
+        self.smart_model = 'qwen2.5:32b-instruct-q4_K_M'
         
         # Speech setup
         self.recognizer = sr.Recognizer()
         self.microphone = sr.Microphone()
-        
-        # Text-to-speech setup
-        self.tts_engine = pyttsx3.init()
-        self.tts_engine.setProperty('rate', 180)  # Speed
         
         # Conversation history
         self.conversation_history = []
@@ -30,13 +37,7 @@ class llama:
         self.is_listening = True
         
         print("llama initializing...")
-        self.speak("llama online.")
-        
-    def speak(self, text):
-        """Convert text to speech"""
-        print(f"llama: {text}")
-        self.tts_engine.say(text)
-        self.tts_engine.runAndWait()
+        text_to_speech("llama online.")
         
     def listen(self):
         """Listen to microphone and convert speech to text"""
@@ -44,7 +45,7 @@ class llama:
             print("Listening...")
             self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
             try:
-                audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=10)
+                audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=10)
                 text = self.recognizer.recognize_google(audio)
                 print(f"You: {text}")
                 return text.lower()
@@ -145,11 +146,13 @@ class llama:
         
         if complexity == 'COMPLEX':
             print("Routing to 70B model for complex reasoning...")
-            self.speak("This requires deeper analysis, one moment...")
-            return self.get_response(user_input, self.smart_model)
+            text_to_speech("This requires deeper analysis, one moment...")
+            response = self.get_response(user_input, self.smart_model)
+            return response
         else:
             print("⚡ Using 8B model for quick response...")
-            return self.get_response(user_input, self.fast_model)
+            response = self.get_response(user_input, self.fast_model)
+            return response
     
     def run(self):
         """Main loop - listen for wake word and process commands"""
@@ -164,7 +167,7 @@ class llama:
                 command = text.replace(self.wake_word, "").strip()
                 
                 if not command:
-                    self.speak("Yes?")
+                    text_to_speech("Yes?")
                     command = self.listen()
                     if not command:
                         continue
@@ -177,7 +180,7 @@ class llama:
                 
                 # Process the query
                 response = self.process_query(command)
-                self.speak(response)
+                text_to_speech(response)
                 
             time.sleep(0.1)  # Small delay to prevent CPU spinning
 
