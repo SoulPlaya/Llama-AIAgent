@@ -7,7 +7,7 @@ import speech_recognition as sr
 import pyttsx3
 import threading
 import time
-
+import tools
 
 def text_to_speech(text):
     """Convert text to speech using pyttsx3"""
@@ -24,6 +24,7 @@ class llama:
         # Model configuration
         self.fast_model = 'llama3.1:8b-instruct-q4_K_M'
         self.smart_model = 'qwen2.5:32b-instruct-q4_K_M'
+        self.image_model = 'llama3.2-vision:11b'
         
         # Speech setup
         self.recognizer = sr.Recognizer()
@@ -57,7 +58,7 @@ class llama:
                 print(f"Error: {e}")
                 return None
     
-    def classify_complexity(self, user_input):
+    def classify_user_input(self, user_input):
         """Ask 8B model to classify query complexity"""
         try:
             response = ollama.chat(
@@ -65,13 +66,15 @@ class llama:
                 messages=[{
                     'role': 'system',
                     'content': '''Classify if this query needs:
+                    - Tool: web search, volume, or computer function
                     - SIMPLE: Quick answer, command, basic question, or factual lookup
                     - COMPLEX: Deep reasoning, analysis, difficult problems, or detailed explanations
                     
+                    Consider Tool: if it needs external data or actions or is an explicit command to use a tool
                     Consider SIMPLE: greetings, commands (open/play/set), simple math, basic facts
                     Consider COMPLEX: "analyze", "compare", "explain why", "best approach", complex coding
                     
-                    Respond with ONLY the word SIMPLE or COMPLEX, nothing else.'''
+                    Respond with ONLY the word TOOL, SIMPLE, or COMPLEX, nothing else.'''
                 }, {
                     'role': 'user',
                     'content': user_input
@@ -84,6 +87,8 @@ class llama:
             # Fallback if model doesn't follow instructions
             if 'COMPLEX' in classification:
                 return 'COMPLEX'
+            elif 'TOOL' in classification:
+                return 'TOOL'
             else:
                 return 'SIMPLE'
                 
@@ -142,7 +147,7 @@ class llama:
         
         # Classify complexity
         print("Analyzing query complexity...")
-        complexity = self.classify_complexity(user_input)
+        complexity = self.classify_user_input(user_input)
         
         if complexity == 'COMPLEX':
             print("Routing to 70B model for complex reasoning...")
@@ -150,7 +155,7 @@ class llama:
             response = self.get_response(user_input, self.smart_model)
             return response
         else:
-            print("⚡ Using 8B model for quick response...")
+            print("Using 8B model for quick response...")
             response = self.get_response(user_input, self.fast_model)
             return response
     
