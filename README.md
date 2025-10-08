@@ -10,5 +10,5 @@ Windows (for now)
 
 ## Commands for Neat Execution ##
 (dependecies) pip install ollama speechrecognition pyaudio pyttsx3
-(fetch models) ollama pull llama3.1:8b-instruct-q4_K_M && ollama pull llama3.1:70b-instruct-q4_K_M
+(fetch models) ollama pull llama3.1:8b-instruct-q4_K_M && ollama pull llama3.1:70b-instruct-q4_K_M && ollama pull llama3.2-vision:11b
 (ensure ollama is running) ollama serve
