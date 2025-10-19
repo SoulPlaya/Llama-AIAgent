@@ -2,6 +2,7 @@ import json
 import urllib.parse
 import webbrowser
 import mss
+import nmap
 
 # Opens web browser to search query
 def search_web(query: str):
@@ -16,3 +17,10 @@ def take_screenshot():
     print(f"Screenshot taken")
     return shot
 
+# Scans a target for open ports
+def scan_ports(target: str, ports: str = "1-1024"):
+    nm = nmap.PortScanner()
+    nm.scan(target, ports)
+    result = nm.csv()
+    print(f"Port scan completed for {target}")
+    return result

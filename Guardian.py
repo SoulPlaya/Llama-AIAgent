@@ -311,6 +311,35 @@ class GuardianAssistant:
 
             time.sleep(0.1)
 
+    def run_with_text(self):
+        """Run the assistant in text mode (console input instead of voice)."""
+        logging.info("Guardian ready. Type commands to start (or 'exit' to quit)")
+        while self.is_listening:
+            try:
+                user_input = input("You: ").strip()
+                
+                # Skip empty input
+                if not user_input:
+                    continue
+                
+                # Check for exit commands
+                if any(w in user_input.lower() for w in ['exit', 'quit', 'goodbye', 'shut down']):
+                    print("Guardian: Shutting down. Goodbye!")
+                    break
+                
+                result = self.handle_query(user_input)
+                if result:
+                    print(f"Guardian: {result}")
+                    
+            except KeyboardInterrupt:
+                print("\nGuardian: Shutting down. Goodbye!")
+                self.is_listening = False
+                break
+            except Exception:
+                logging.exception("Error in run_with_text")
+                print("Guardian: An error occurred. Please try again.")
+
+
 
 # -----------------------------------------------------------------------------
 # --- Entry Point -------------------------------------------------------------
