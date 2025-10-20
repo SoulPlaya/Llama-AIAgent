@@ -125,9 +125,9 @@ class GuardianAssistant:
         """Return classification: TOOL | SIMPLE | COMPLEX"""
         system_prompt = (
             "Classify the user query as one of:\n"
-            "TOOL: if it requests a web search or screenshot.\n"
+            "TOOL: if it requests a web search or view of screen.\n"
             "SIMPLE: if it's a short or factual question.\n"
-            "COMPLEX: if it needs reasoning or analysis.\n"
+            "COMPLEX: if it needs reasoning.\n"
             "Respond ONLY with TOOL, SIMPLE, or COMPLEX."
         )
 
@@ -176,7 +176,7 @@ class GuardianAssistant:
 
         return None
     
-    def _select_tool_args(self, query, func_name):
+    def _select_tool_args(self, query, func_name, func_args: ):
         """Ask model for tool arguments."""
         prompt = (
             "You are a precise AI that provides function arguments \n"
