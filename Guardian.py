@@ -9,12 +9,16 @@ import speech_recognition as sr
 import pyttsx3
 import tools
 
+
+
+
+
 logging.basicConfig(level=logging.INFO)
 
 
 class GuardianAssistant:
     """
-    Voice-enabled AI agent using Ollama LLMs and optional tools.
+    Voice or text - AI agent using Ollama LLMs and tools.
     """
 
     def __init__(
@@ -41,12 +45,6 @@ class GuardianAssistant:
         self.max_history = max_history
         self.wake_word = wake_word.lower()
         self.is_listening = True
-
-        # Tools
-        self.tools = {
-            "search_web": tools.search_web,
-            "take_screenshot": tools.take_screenshot,
-        }
 
         # TTS worker
         self.tts_queue = queue.Queue()
