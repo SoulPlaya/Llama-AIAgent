@@ -8,6 +8,7 @@ import ollama
 import speech_recognition as sr
 import pyttsx3
 import tools
+import db
 
 
 
@@ -29,6 +30,9 @@ class GuardianAssistant:
         wake_word="Guardian",
         max_history=10,
     ):
+        # Database
+        self.db = db.Database()
+
         # Models
         self.fast_model = fast_model
         self.smart_model = smart_model

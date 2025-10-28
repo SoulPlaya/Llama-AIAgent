@@ -83,7 +83,7 @@ class Database:
             cur.execute(query)
             return cur.fetchall()
     
-    def function_name_to_id(self, name):
+    def get_function_name_to_id(self, name):
         query = 'SELECT id FROM functions WHERE name = %s'
         with self.conn.cursor() as cur:
             cur.execute(query, (name,))
@@ -98,13 +98,15 @@ class Database:
         with self.conn.cursor() as cur:
             cur.execute(query, (function_id,))
             return cur.fetchall()
+        
+    def get_function_calls(self):
+        query = 'SELECT * FROM function_calls ORDER BY used_at DESC'
+        with self.conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+        
     
     def close(self):
         """Close the database connection"""
         if self.conn:
             self.conn.close()
-
-if __name__ == '__main__':
-    db = Database()
-    print("Database initialized successfully!")
-    db.close()
