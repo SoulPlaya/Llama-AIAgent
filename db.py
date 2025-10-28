@@ -76,6 +76,32 @@ class Database:
                 )
             """)
             self.conn.commit()
+
+    def seed_database(self):
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM functions")
+            count = cur.fetchone()[0]
+            if count == 0:
+                cur.execute("""
+                    INSERT INTO functions (name, description) VALUES
+                    ('scan_ports', 'scans selected ports on a selected IP address'),
+                    ('take_screenshot', 'takes a screenshot of the screen for processes like ai-decription of on screen events'),
+                    ('search_web', 'searches the web for a given query')
+                """)
+                self.conn.commit()
+            cur.execute("SELECT COUNT(*) FROM function_arguments")
+            count = cur.fetchone()[0]
+            if count == 0:
+                cur.execute("""
+                    INSERT INTO function_arguments (function_id, arg_name, arg_type, is_required, default_value, description, arg_order) VALUES
+                            
+                    ((SELECT id FROM functions WHERE name='scan_ports'), 'target', 'str', TRUE, NULL, 'The target IP address or hostname to scan', 1),
+                    ((SELECT id FROM functions WHERE name='scan_ports'), 'ports', 'str', FALSE, '1-1024', 'The range of ports to scan (default: 1-1024)', 2),
+                            
+                    ((SELECT id FROM functions WHERE name='search_web'), 'query', 'str', TRUE, NULL, 'The search query string', 1)
+                """)
+                self.conn.commit()
+            
     
     def get_function_names(self):
         query = 'SELECT name FROM functions'
@@ -91,7 +117,7 @@ class Database:
             return result[0] if result else None
        
     def get_function_args_by_name(self, name):
-        function_id = self.function_name_to_id(name)
+        function_id = self.get_function_name_to_id(name)
         if function_id is None:
             return None
         query = 'SELECT * FROM function_arguments WHERE function_id = %s ORDER BY arg_order'
