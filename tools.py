@@ -35,7 +35,7 @@ def watch_screen_for_changes(till_changed: bool | None, iterations: int | None, 
             if diff > threshold:
                 print("Significant screen change detected")
                 if till_changed:
-                    break
+                    return current_image
         last_image = current_image
         time.sleep(3)
         iterations -= 1
